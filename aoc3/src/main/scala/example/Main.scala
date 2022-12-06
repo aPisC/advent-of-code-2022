@@ -13,12 +13,10 @@ object Main2 extends App {
           (Option[String], Option[String])
       )
     ]((Nil, (None, None))) {
-      case ((result, (None, None)), line) =>
-        (result, (Some(line), None))
-      case ((result, (v1, None)), line) =>
-        (result, (v1, Some(line)))
-      case ((result, (Some(v1), Some(v2))), line) =>
-        (result :+ (v1, v2, line), (None, None))
+      case ((list, (None, None)), v) => (list, (Some(v), None))
+      case ((list, (v1, None)), v)   => (list, (v1, Some(v)))
+      case ((list, (Some(v1), Some(v2))), v) =>
+        (list :+ (v1, v2, v), (None, None))
       case (r, _) => r
     }
     ._1
