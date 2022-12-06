@@ -7,28 +7,22 @@ object Shapes extends Enumeration {
 
   val Rock, Scissors, Paper: Shape = Value
 
-  def parse(char: Char): Shape = {
-    char match {
-      case 'A' | 'X' => (Rock)
-      case 'B' | 'Y' => (Paper)
-      case 'C' | 'Z' => (Scissors)
-    }
+  def parse(char: String): Shape = char match {
+    case "A" | "X" => (Rock)
+    case "B" | "Y" => (Paper)
+    case "C" | "Z" => (Scissors)
   }
 
-  def stronger(shape: Shape) = {
-    shape match {
-      case Rock     => Paper
-      case Paper    => Scissors
-      case Scissors => Rock
-    }
+  def stronger(shape: Shape) = shape match {
+    case Rock     => Paper
+    case Paper    => Scissors
+    case Scissors => Rock
   }
 
-  def weaker(shape: Shape) = {
-    shape match {
-      case Paper    => Rock
-      case Scissors => Paper
-      case Rock     => Scissors
-    }
+  def weaker(shape: Shape) = shape match {
+    case Paper    => Rock
+    case Scissors => Paper
+    case Rock     => Scissors
   }
 }
 
@@ -51,19 +45,19 @@ case class Round(opponent: Shapes.Shape, me: Shapes.Shape) {
 }
 
 object Round {
-  def parse(line: String) = {
-    Round(Shapes.parse(line.charAt(0)), Shapes.parse(line.charAt(2)))
+  // Parsing logic for task 1
+  def parse1(line: String) = line match {
+    case s"$a $b" => Round(Shapes.parse(a), Shapes.parse(b))
   }
 
-  def parse2(line: String) = {
-    val op = Shapes.parse(line.charAt(0))
-    val me = line.charAt(2) match {
-      case 'X' => Shapes.weaker(op)
-      case 'Z' => Shapes.stronger(op)
-      case _   => op
-    }
-
-    Round(op, me)
+  // Parsing logic for task 2
+  def parse2(line: String) = line match {
+    case s"$a X" =>
+      Round(Shapes.parse(a), Shapes.weaker(Shapes.parse(a)))
+    case s"$a Y" =>
+      Round(Shapes.parse(a), Shapes.parse(a))
+    case s"$a Z" =>
+      Round(Shapes.parse(a), Shapes.stronger(Shapes.parse(a)))
   }
 }
 
@@ -71,9 +65,11 @@ object Main extends App {
 
   private val filePath = "input/input";
   private val file = Source.fromFile(filePath)
-  private val rounds = file.getLines.map(Round parse _)
 
-  private val score = rounds.map(_.score).sum
+  private val score = file.getLines
+    .map(Round parse1 _)
+    .map(_.score)
+    .sum
 
   print(score)
   file.close
